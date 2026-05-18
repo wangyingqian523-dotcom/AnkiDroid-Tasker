@@ -46,6 +46,13 @@ class PeriodicWorker(context: Context, params: WorkerParameters) : Worker(contex
             // a scheduled card is found, show it.
             mAnkiDroid.storeState(localState.deckId, nextCard)
             Notifications.create().showNotification(applicationContext, nextCard, mAnkiDroid.currentDeckName, false)
+
+            // Also broadcast to Tasker so external automation can pick it up
+            val bc = android.content.Intent("com.ankidroid.companion.NEXT_CARD_DATA")
+            bc.putExtra("card_q", nextCard.q)
+            bc.putExtra("card_a", nextCard.a)
+            bc.putExtra("deck_name", mAnkiDroid.currentDeckName)
+            applicationContext.sendBroadcast(bc)
         }
         else
         {
