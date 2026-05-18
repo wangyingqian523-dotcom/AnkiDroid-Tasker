@@ -29,10 +29,10 @@ class Notifications {
             expandedView.setTextViewText(R.id.textViewExpandedHeader, card.q)
             expandedView.setTextViewText(R.id.textViewContent, card.a)
 
-            expandedView.setOnClickPendingIntent(R.id.button1, createIntent(context,"ACTION_BUTTON_1"))
-            expandedView.setOnClickPendingIntent(R.id.button2, createIntent(context,"ACTION_BUTTON_2"))
-            expandedView.setOnClickPendingIntent(R.id.button3, createIntent(context,"ACTION_BUTTON_3"))
-            expandedView.setOnClickPendingIntent(R.id.button4, createIntent(context,"ACTION_BUTTON_4"))
+            expandedView.setOnClickPendingIntent(R.id.button1, createIntent(context,"ACTION_BUTTON_1", card))
+            expandedView.setOnClickPendingIntent(R.id.button2, createIntent(context,"ACTION_BUTTON_2", card))
+            expandedView.setOnClickPendingIntent(R.id.button3, createIntent(context,"ACTION_BUTTON_3", card))
+            expandedView.setOnClickPendingIntent(R.id.button4, createIntent(context,"ACTION_BUTTON_4", card))
 
             builder = NotificationCompat.Builder(context, "channel_id")
                 .setSmallIcon(R.drawable.ic_notification)
@@ -71,9 +71,13 @@ class Notifications {
         notificationManager.notify(1, notification)
     }
 
-    private fun createIntent(context: Context, action: String): PendingIntent {
+    private fun createIntent(context: Context, action: String, card: CardInfo? = null): PendingIntent {
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.action = action
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        if (card != null) {
+            intent.putExtra("card_q", card.q)
+            intent.putExtra("card_a", card.a)
+        }
+        return PendingIntent.getBroadcast(context, action.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }
