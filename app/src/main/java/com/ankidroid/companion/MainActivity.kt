@@ -154,6 +154,13 @@ class MainActivity : ComponentActivity() {
         if (card != null) {
             mAnkiDroid.storeState(deckID, card)
             Notifications.create().showNotification(this, card, deckName, false)
+
+            // Broadcast first card to Tasker — seamless start
+            val bc = Intent("com.ankidroid.companion.NEXT_CARD_DATA")
+            bc.putExtra("card_q", card.q)
+            bc.putExtra("card_a", card.a)
+            bc.putExtra("deck_name", deckName)
+            sendBroadcast(bc)
         } else {
             // No cards to show.
             val emptyCard = CardInfo()
